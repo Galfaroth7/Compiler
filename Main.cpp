@@ -2,8 +2,10 @@
 
 #include "Scanner.h"
 #include "Token.h"
+#include "Parser.h"
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 
 
 void printValue(Token& t) {
@@ -23,27 +25,22 @@ void printValue(Token& t) {
 	case Token::Type::Else: std::cout << "else"; break;
 	case Token::Type::In: std::cout << "in"; break;
 	case Token::Type::EqualOperator: std::cout << "=="; break;
-	case Token::Type::Eof: std::cout << "EOF";
+	case Token::Type::Eof: std::cout << "EOF"; break;
+	case Token::Type::Dot: std::cout << "."; break;
+	case Token::Type::Quote: std::cout << "\""; break;
 	case Token::Type::UnknownToken: std::cout << "Unknown"; break;
 	default: std::cout << t.getStringValue();
 	}
 	std::cout << std::endl << std::endl;
 }
 
-//   && || -> == = : cos.wwwiu
 
 int main()
 {
 
-	std::istringstream in("$$ $value $value.txt asdf in for else if () {} ][");
-	Scanner scanner(in);
-	do
-	{
-		scanner.readNextToken();
-		Token token;
-		token = scanner.getToken();
-		std::cout << token.getType() << std::endl;
-		printValue(token);
-	} while (scanner.getToken().getType() != Token::Type::Eof);
+	//std::istringstream in("my_fun($a){ for($b in $list) { hello: $b -> \"g++ -c hello.c\" } }  $a = windows \n $b = linux \n hello: {hello.cpp hello.h} -> \"g++ -c hello.c\" if($a == window && $b == linux && $c == unix ) hello: {hello.cpp hello.h} -> \"g++ -c hello.c\"");
+	//Parser parser(in);
+	//parser.parse();
+	system("echo Jestem");
 	return 0;
 }

@@ -147,14 +147,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ASTRootNode.h" />
+    <ClInclude Include="BinaryExpression.h" />
+    <ClInclude Include="Block.h" />
+    <ClInclude Include="BuildStatement.h" />
+    <ClInclude Include="Expression.h" />
+    <ClInclude Include="FileIdentifier.h" />
+    <ClInclude Include="FunctionCall.h" />
+    <ClInclude Include="FunctionDefinition.h" />
+    <ClInclude Include="Loop.h" />
+    <ClInclude Include="NameIdentifier.h" />
+    <ClInclude Include="List.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="Scanner.h" />
+    <ClInclude Include="Selection.h" />
+    <ClInclude Include="Statement.h" />
+    <ClInclude Include="String.h" />
     <ClInclude Include="Token.h" />
+    <ClInclude Include="VariableIdentifier.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinaryExpression.cpp" />
+    <ClCompile Include="BuildStatement.cpp" />
+    <ClCompile Include="FileIdentifier.cpp" />
+    <ClCompile Include="FunctionCall.cpp" />
+    <ClCompile Include="FunctionDefinition.cpp" />
+    <ClCompile Include="Loop.cpp" />
+    <ClCompile Include="NameIdentifier.cpp" />
+    <ClCompile Include="List.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Parser-Tests.cpp" />
+    <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Scanner-Tests.cpp" />
     <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="Selection.cpp" />
+    <ClCompile Include="Assignment.h" />
+    <ClCompile Include="String.cpp" />
     <ClCompile Include="Token.cpp" />
+    <ClCompile Include="VariableIdentifier.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

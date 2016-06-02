@@ -21,7 +21,6 @@ Token Token::ofType(Type type) {
 std::string Token::toString(Token::Type type) {
 	switch (type) {
 	case Token::Type::Eof: return "Eof";
-	case Token::Type::FileIdentifier: return "File identifier";
 	case Token::Type::NameIdentifier: return "Name identifier";
 	case Token::Type::VariableIdentifier: return "Variable identifier";
 	case Token::Type::If: return "IF";
@@ -29,7 +28,6 @@ std::string Token::toString(Token::Type type) {
 	case Token::Type::For: return "FOR";
 	case Token::Type::In: return "IN";
 	case Token::Type::AssignmentOperator: return "Assignment operator";
-	case Token::Type::String: return "String";
 	case Token::Type::Colon: return "Colon";
 	case Token::Type::OpenBracket: return "Open bracket";
 	case Token::Type::CloseBracket: return "Close bracket";
@@ -39,6 +37,11 @@ std::string Token::toString(Token::Type type) {
 	case Token::Type::OrOperator: return "Or operator";
 	case Token::Type::EqualOperator: return "Equal operator";
 	case Token::Type::BuildOperator: return "Build operator";
+	case Token::Type::Dot: return "Dot";
+	case Token::Type::Quote: return "Quote";
+	case Token::Type::True: return "TRUE";
+	case Token::Type::False: return "FALSE";
+	case Token::Type::FunctionCallMarker: return "Function call marker";
 
 	default: return "Unknown token type";
 	}
@@ -46,10 +49,8 @@ std::string Token::toString(Token::Type type) {
 
 Token Token::createSimpleToken(Type type)
 {
-	if (type == Token::Type::FileIdentifier
-		|| type == Token::Type::NameIdentifier
-		|| type == Token::Type::VariableIdentifier
-		|| type == Token::Type::String)
+	if ( type == Token::Type::NameIdentifier
+		|| type == Token::Type::VariableIdentifier)
 		throw new std::runtime_error("Invalid type");
 	else
 		return ofType(type);
@@ -57,10 +58,8 @@ Token Token::createSimpleToken(Type type)
 
 Token Token::createStringToken(std::string string, Type type)
 {
-	if (type != Token::Type::FileIdentifier
-		&& type != Token::Type::NameIdentifier
-		&& type != Token::Type::VariableIdentifier
-		&& type != Token::Type::String)
+	if (type != Token::Type::NameIdentifier
+		&& type != Token::Type::VariableIdentifier)
 		throw new std::runtime_error("Invalid type");
 	else
 	{

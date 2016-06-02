@@ -27,13 +27,15 @@ private:
 	bool tryVariableIdentifier();
 	bool tryKeywordOrNameIdentifier();
 	bool tryColon();
+	bool tryDot();
 	bool tryParentheses();
 	bool tryAssignmentOperator();
 	bool tryAndOperator();
 	bool tryOrOperator();
 	bool tryEqualOperator();
 	bool tryBuildOperator();
-	bool tryString();
+	bool tryQuote();
+	bool tryFunctionCallMarker();
 	std::istream& in;
 	Token token;
 	unsigned int currentLine = 1;

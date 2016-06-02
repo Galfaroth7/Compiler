@@ -42,7 +42,10 @@ bool Scanner::tokenFound()
 		|| tryEqualOperator()
 		|| tryAssignmentOperator()
 		|| tryColon()
+		|| tryDot()
+		|| tryQuote()
 		|| tryBuildOperator()
+		|| tryFunctionCallMarker()
 		|| tryVariableIdentifier()
 		|| tryKeywordOrNameIdentifier();
 }
@@ -109,19 +112,11 @@ bool Scanner::tryKeywordOrNameIdentifier()
 		token = Token::createSimpleToken(Token::Type::For);
 	else if (buf == "in")
 		token = Token::createSimpleToken(Token::Type::In);
-	else if (in.peek() == '.')
-	{
-		in.get();
-		buf += ".";
-		buf2 += readString();
-		if (!buf2.empty())
-		{
-			buf += buf2;
-			token = Token::createStringToken(buf, Token::Type::FileIdentifier);
-		}
+	else if (buf == "true")
+		token = Token::createSimpleToken(Token::Type::True);
+	else if (buf == "false")
+		token = Token::createSimpleToken(Token::Type::False);
 
-		else return false;
-	}
 	else if (!buf.empty())
 	{
 		token = Token::createStringToken(buf, Token::Type::NameIdentifier);
@@ -134,36 +129,28 @@ bool Scanner::tryKeywordOrNameIdentifier()
 
 bool Scanner::tryVariableIdentifier()
 {
-	std::string buf, buf2, buf3;
+	std::string buf, buf2;
 	if (in.peek() != '$')
 		return false;
 	in.get();
 	buf += "$";
-	buf3 += readString();
-	if (!buf3.empty())
-		if (in.peek() != '.')
-		{
-			buf += buf3;
-			token = Token::createStringToken(buf, Token::Type::VariableIdentifier);
-			return true;
-		}
-		else
-		{
-			buf += buf3;
-			in.get();
-			buf += ".";
-			buf2 += readString();
-			if (!buf2.empty())
-			{
-				buf += buf2;
-				token = Token::createStringToken(buf, Token::Type::FileIdentifier);
-				return true;
-			}
-
-			else return false;
-		}
+	buf2 += readString();
+	if (!buf2.empty()) {
+		buf += buf2;
+		token = Token::createStringToken(buf, Token::Type::VariableIdentifier);
+	}
 	else return false;
+	return true;
 	
+}
+
+bool Scanner::tryDot()
+{
+	if (in.peek() != '.')
+		return false;
+	in.get();
+	token = Token::createSimpleToken(Token::Type::Dot);
+	return true;
 }
 
 bool Scanner::tryAssignmentOperator()
@@ -247,17 +234,22 @@ bool Scanner::tryEof()
 	return true;
 }
 
-//bool Scanner::tryCloseBrace()
-//{
-//	if (in.peek != '}')
-//		return false;
-//	in.get();
-//	token = Token::createSimpleToken(Token::Type::CloseBrace);
-//	return true;
-//}
-//
 
+bool Scanner::tryQuote()
+{
+	if (in.peek() != '"')
+		return false;
+	in.get();
+	token = Token::createSimpleToken(Token::Type::Quote);
+	return true;
+}
 
-
-
+bool Scanner::tryFunctionCallMarker()
+{
+	if (in.peek() != '@')
+		return false;
+	in.get();
+	token = Token::createSimpleToken(Token::Type::FunctionCallMarker);
+	return true;
+}
 

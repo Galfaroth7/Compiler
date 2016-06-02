@@ -10,7 +10,6 @@ public:
 	enum class Type
 	{
 		Eof,
-		FileIdentifier,
 		NameIdentifier,
 		VariableIdentifier,
 		If,
@@ -29,6 +28,11 @@ public:
 		BuildOperator,
 		String,
 		UnknownToken,
+		Dot,
+		Quote,
+		True,
+		False,
+		FunctionCallMarker,
 	};
 
 	
@@ -36,8 +40,8 @@ public:
 	~Token();
 	Token(std::string);
 
-	Type getType() { return type; }
-	std::string getStringValue() { return stringValue; }
+	const Type getType() { return type; }
+	const std::string getStringValue() { return stringValue; }
 
 	static std::string toString(Type);
 	static Token ofType(Type);
