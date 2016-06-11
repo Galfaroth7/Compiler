@@ -39,8 +39,38 @@ int main()
 {
 
 	//std::istringstream in("my_fun($a){ for($b in $list) { hello: $b -> \"g++ -c hello.c\" } }  $a = windows \n $b = linux \n hello: {hello.cpp hello.h} -> \"g++ -c hello.c\" if($a == window && $b == linux && $c == unix ) hello: {hello.cpp hello.h} -> \"g++ -c hello.c\"");
-	//Parser parser(in);
-	//parser.parse();
-	system("echo Jestem");
+	//std::istringstream in("$a = alfa $b = beta $c = gamma.exe $d = {a.exe} $e = {abecadlo b.exe c $d e f g h} $f = {a b}     $d.exe : {} -> \"g++ hello.c \"");
+	
+	//std::istringstream in("$a = alfa $b = beta $c = kappa if($c == kappa && ($a == alfa || $a == beta) && $a == alfa) a.exe : {} -> \"g++ hello.c \"");
+	std::istringstream in("$a = alfa $b = beta hello.o : {} -> \"g++ hello.c\" hello.exe : {hello.o}  -> \"g++ hello.o \" ");
+	Parser parser(in);
+	parser.parse();
+	//system("echo Jestem");
+	getchar();
 	return 0;
 }
+
+
+/*
+Powiedzmy, ze przypisywanie do zmiennych dziala
+Teraz trzeba spróbowaæ zrobiæ wykonanie polecenia budowania
+Jeœli chodzi o targety to trzeba je zrobic map¹ (string + bool) gdzie bool oznacza czy dany plik ju¿
+byl zbudowany
+Do targetów powinno byæ dodawane przy tworzeniu drzewa
+Trzeba zalozyc ze uzytkownik nie bedzie chcial w jednym pliku kilkakrotnie budowac tego samego
+(bo wtedy jeden skrypt najpierw by cos zbudowal, a potem nadpisal to co zbudowal)
+ale pewnie i tak trzeba to sprawdzaæ (zapytaæ o to Grochowskiego -- najlepiej w czwartek)
+Powalczyc z testami - zastanowic sie ktore metody upubliczniæ
+
+Wtorek 17:49 ->
+dzia³a build, ale bez obs³ugi targetów
+binary expression siê (chyba) dobrze wylicza
+dzia³a if bez elsa
+
+
+
+
+
+
+Ogolnie zrefaktoryzowac ten kod, bo jest strasznie slaby
+*/

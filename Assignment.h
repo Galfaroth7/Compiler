@@ -3,20 +3,22 @@
 #include <string>
 #include "Statement.h"
 #include "Expression.h"
+#include "VariablesMap.h"
 
 class Assignment : public Statement {
 public:
 
-	Assignment(std::unique_ptr<Expression> variable, std::unique_ptr<Expression> assignable) :
+	Assignment(std::string variable, std::unique_ptr<Expression> assignable) :
 		variable(std::move(variable)), assignable(std::move(assignable)) { };
 
-	/*void execute(VariablesMap& map) override {
-		map.storeVariable(varName_, assignable_->evaluate(map));
-	}*/
+	void execute(VariablesMap& map) override
+	{
+		map.storeVariable(variable, assignable->evaluate(map));
+	}
 
 private:
 
-	std::unique_ptr<Expression> variable;
+	std::string variable;
 	std::unique_ptr<Expression> assignable;
 
 };

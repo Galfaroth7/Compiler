@@ -7,16 +7,17 @@ class FunctionDefinition :
 	public Statement
 {
 public:
-	FunctionDefinition(std::unique_ptr<Expression> fName, std::vector<std::unique_ptr<Expression>>& args, std::unique_ptr<Statement> fbody)
-		: functionName(std::move(fName)), arguments(std::move(args)), body(std::move(fbody))   {}
+	FunctionDefinition(std::string fName, std::vector<std::unique_ptr<Expression>>& args, std::unique_ptr<Statement> fbody);
 	
 	~FunctionDefinition();
-
+	std::string getFunctionName();
+	std::vector<std::string> getArgs(VariablesMap& map);
+	void execute(VariablesMap& map);
 
 private:
-	std::unique_ptr<Expression> functionName;
+	std::string functionName;
 	std::vector<std::unique_ptr<Expression>> arguments;
 	std::unique_ptr<Statement> body;
-
+	
 };
 

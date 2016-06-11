@@ -1,28 +1,33 @@
 #pragma once
-#include <vector>
+#include "Expression.h"
+#include "Statement.h"
+#include <iostream>
 
 class ASTRootNode {
 public:
 
-	
-	ASTRootNode(std::vector<int>& functions, std::vector<int>& statements) :
-		functions(functions), statements(statements) { }
+
+	ASTRootNode(std::vector<std::unique_ptr<Statement>>& functions,std::vector<std::unique_ptr<Statement>>& assignments, std::vector<std::unique_ptr<Statement>>& statements) :
+		functions(std::move(functions)), assignments(std::move(assignments)), statements(std::move(statements)) { }
 
 	void execute()
 	{
-		for (auto fun : functions)
+		for (auto& assign : assignments)
 		{
-			auto name = fun.getName();
-			map.storeFunction(name, fun);
+			assign->execute(map);
 		}
-		for (const auto statement : statements)
-			statement.execute(map);
+		
+		for (const auto& statement : statements)
+			statement->execute(map);
+		
 		return;
 	}
 
 private:
 
-	std::vector<int> functions;
-	std::vector<int> statements;
+	std::vector<std::unique_ptr<Statement>> functions;
+	std::vector<std::unique_ptr<Statement>> statements;
+	std::vector<std::unique_ptr<Statement>> assignments;
+	
 	VariablesMap map;
 };

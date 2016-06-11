@@ -1,21 +1,36 @@
 #pragma once
 #include "Statement.h"
 #include "Expression.h"
+#include "VariablesMap.h"
+#include <iostream>
 
 class BuildStatement : public Statement
 {
 public:
-	BuildStatement(std::unique_ptr<Expression> target, std::unique_ptr<Expression> dependencies, std::unique_ptr<Expression> buildCommand)
-		: target(std::move(target)), dependencies(std::move(dependencies)), buildCommand(std::move(buildCommand)) {}
+	BuildStatement(std::unique_ptr<Expression> target, std::unique_ptr<Expression> dependencies, std::unique_ptr<Expression> buildCommand);
+	~BuildStatement() {}
+	bool getBuilt(){ return isBuilt; }
+
 	
-	~BuildStatement();
-	//void execute();
+	
 private:
 	std::unique_ptr<Expression> target;
 	std::unique_ptr<Expression> dependencies;
 	std::unique_ptr<Expression> buildCommand;
-	
-	
+	bool isBuilt;
+
+	std::string getTarget(VariablesMap& map)
+	{
+		auto targetResult = target->evaluate(map);
+		if (targetResult.size() != 1)
+		{
+			//throw error
+		}
+		return *targetResult.begin();
+	}
+
+
+	void execute(VariablesMap& map) override;
 
 };
 

@@ -15,6 +15,7 @@
 #include "FunctionCall.h"
 #include "Assignment.h"
 #include "BuildStatement.h"
+#include "ASTRootNode.h"
 
 #include <vector>
 #include <memory>

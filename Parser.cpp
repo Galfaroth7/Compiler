@@ -102,7 +102,11 @@ std::vector<std::unique_ptr<Statement>> Parser::parseAssignments()
 {
 	std::vector<std::unique_ptr<Statement>> assignments;
 	while (checkTokenType(Token::Type::VariableIdentifier))
-		assignments.push_back(parseAssignment());
+	{
+		advance();
+		if (checkTokenType(Token::Type::AssignmentOperator))
+			assignments.push_back(parseAssignment());
+	}
 	return assignments;
 }
 
@@ -120,7 +124,9 @@ std::vector<std::unique_ptr<Statement>> Parser::parseStatements()
 	while (checkTokenType(Token::Type::For)
 			|| checkTokenType(Token::Type::If)
 			|| checkTokenType(Token::Type::NameIdentifier)
-			|| checkTokenType(Token::Type::OpenBrace))
+			|| checkTokenType(Token::Type::OpenBrace)
+			|| checkTokenType(Token::Type::VariableIdentifier)
+			|| currentToken.getType() == Token::Type::VariableIdentifier)
 		statements.push_back(parseStatement());
 	return statements;
 }
@@ -129,30 +135,32 @@ std::vector<std::unique_ptr<Statement>> Parser::parseStatements()
 //**********************************************************************************************
 //**********************************************************************************************
 
-
+// $c == beta || $a == beta || $a == alfa
 
 std::unique_ptr<Expression> Parser::parseOrExpression()
 {
 	auto left = parseAndExpression();
+
+
 	if (checkTokenType(Token::Type::OrOperator))
 	{	
 		advance();
-		auto right = parseAndExpression();
+		auto right = parseOrExpression();
 		return std::make_unique<BinaryExpression>(std::move(left), Expression::BinaryOperator::OR, std::move(right));
 	}
+	return (std::move(left));
 }
 
 std::unique_ptr<Expression> Parser::parseAndExpression()
 {
-
-	//Sprawdziæ czy bedzie dzialac z  ifem
 	auto left = parseCompareExpression();
 	if (checkTokenType(Token::Type::AndOperator))
 	{	
 		advance();
-		auto right = parseCompareExpression();
+		auto right = parseAndExpression();
 		return std::make_unique<BinaryExpression>(std::move(left), Expression::BinaryOperator::AND, std::move(right));
 	}
+	return (std::move(left));
 }
 
 std::unique_ptr<Expression> Parser::parseCompareExpression()
@@ -212,7 +220,7 @@ std::unique_ptr<Statement> Parser::parseLoop()
 
 	requireToken(Token::Type::For);
 	requireToken(Token::Type::OpenBracket);
-	auto element = std::make_unique<VariableIdentifier>(requireToken(Token::Type::VariableIdentifier).getStringValue()); 
+	auto element = requireToken(Token::Type::VariableIdentifier).getStringValue(); 
 	requireToken(Token::Type::In);
 	if (checkTokenType(Token::Type::OpenBrace))
 		collection = parseList();
@@ -234,9 +242,9 @@ std::unique_ptr<Statement> Parser::parseBlock()
 
 std::unique_ptr<Statement> Parser::parseFunctionCall()
 {
-	auto functionName = std::make_unique<NameIdentifier>(requireToken(Token::Type::NameIdentifier).getStringValue());
+	auto functionName = requireToken(Token::Type::NameIdentifier).getStringValue();
 	auto arguments = parseIdentifierList();
-	return std::make_unique<FunctionCall>(std::move(functionName), std::move(arguments));
+	return std::make_unique<FunctionCall>(functionName, std::move(arguments));
 }
 
 
@@ -244,9 +252,10 @@ std::unique_ptr<Statement> Parser::parseBuildStatement()
 {
 	std::unique_ptr<Expression> dependencies;
 	
-	if (checkTokenType(Token::Type::NameIdentifier) || checkTokenType(Token::Type::VariableIdentifier))
+	if (checkTokenType(Token::Type::NameIdentifier) || checkTokenType(Token::Type::VariableIdentifier) || currentToken.getType() == Token::Type::VariableIdentifier)
 	{
-		advance();
+		if(checkTokenType(Token::Type::NameIdentifier) || checkTokenType(Token::Type::VariableIdentifier))
+			advance();
 		auto name = createIdentifierName(currentToken.getType());
 		auto target = getIdentifierIfDot(std::move(name));
 		
@@ -270,16 +279,20 @@ std::unique_ptr<Statement> Parser::parseBuildStatement()
 
 std::unique_ptr<Statement> Parser::parseFunctionDefinition()
 {
-	auto functionName = std::make_unique<NameIdentifier>(requireToken(Token::Type::NameIdentifier).getStringValue());
+	auto functionName = requireToken(Token::Type::NameIdentifier).getStringValue();
+	requireToken(Token::Type::OpenBracket);
 	auto arguments = parseIdentifierList();
+	requireToken(Token::Type::CloseBracket);
 	auto body = parseStatement();
-	return std::make_unique<FunctionDefinition>(std::move(functionName), std::move(arguments), std::move(body));
+	return std::make_unique<FunctionDefinition>(functionName, std::move(arguments), std::move(body));
 }
 
 std::unique_ptr<Statement> Parser::parseAssignment()
 {
 	std::unique_ptr<Expression> assignable;
-	auto varName = std::make_unique<VariableIdentifier>(requireToken(Token::Type::VariableIdentifier).getStringValue());
+	
+	auto varName = currentToken.getStringValue();
+	//auto varName = std::make_unique<VariableIdentifier>(requireToken(Token::Type::VariableIdentifier).getStringValue());
 	requireToken(Token::Type::AssignmentOperator);
 	if (checkTokenType(Token::Type::OpenBrace))
 		assignable = parseList();
@@ -290,7 +303,7 @@ std::unique_ptr<Statement> Parser::parseAssignment()
 		auto name = std::make_unique<NameIdentifier>(requireToken(Token::Type::NameIdentifier).getStringValue());
 		assignable = getIdentifierIfDot(std::move(name));
 	}
-	return std::make_unique<Assignment>(std::move(varName), std::move(assignable));
+	return std::make_unique<Assignment>(varName, std::move(assignable));
 }
 
 //**********************************************************************************************
@@ -334,8 +347,13 @@ std::unique_ptr<List> Parser::parseList()
 
 void Parser::parse()
 {
+
+	VariablesMap map;
 	advance();
-	parseFunctionDefinitions();
-	parseAssignments();
-	parseStatements();
+	
+	auto funs = parseFunctionDefinitions();
+	auto assigns = parseAssignments();
+	auto statements = parseStatements();
+	auto ast = ASTRootNode(funs, assigns, statements);
+	ast.execute();
 }

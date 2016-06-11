@@ -13,10 +13,12 @@ public:
 	Block(std::vector<std::unique_ptr<Statement>>& statements) :
 		statements(std::move(statements)) { }
 
-	//void executeAll(VariablesMap& map) {
-	//	for (auto& statement : statements_)
-	//		statement->execute(map);
-	//}
+
+	void execute(VariablesMap& map) override
+	{
+		for (auto& statement : statements)
+			statement->execute(map);
+	}
 
 private:
 
